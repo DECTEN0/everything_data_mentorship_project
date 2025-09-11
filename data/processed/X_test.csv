@@ -1,0 +1,24 @@
+age_range,gender,referral_source,years_experience,track_applied,weekly_commitment_hours,main_aim,skill_level,aptitude_test_completed,total_score
+25-34 years,Male,Twitter,1-3 years,Data science,7-14 hours,Upskill,Intermediate,Yes,68.67
+18-24 years,Female,WhatsApp,6 months - 1 year,Data science,7-14 hours,Upskill,Intermediate,Yes,75.0
+25-34 years,Male,WhatsApp,Less than six months,Data analysis,7-14 hours,Upskill,Beginner,Yes,64.0
+18-24 years,Female,WhatsApp,Less than six months,Data analysis,7-14 hours,Learn afresh,Beginner,Yes,70.67
+25-34 years,Male,Twitter,6 months - 1 year,Data analysis,more than 14 hours,Upskill,Intermediate,Yes,73.0
+25-34 years,Male,Twitter,Less than six months,Data analysis,7-14 hours,Upskill,Beginner,Yes,74.33
+25-34 years,Male,Twitter,6 months - 1 year,Data science,7-14 hours,Upskill,Intermediate,Yes,63.0
+18-24 years,Male,WhatsApp,Less than six months,Data science,7-14 hours,Portfolio,Elementary,Yes,80.0
+25-34 years,Female,WhatsApp,Less than six months,Data analysis,more than 14 hours,Portfolio,Elementary,Yes,65.67
+18-24 years,Male,WhatsApp,Less than six months,Data science,7-14 hours,Upskill,Elementary,Yes,61.0
+18-24 years,Female,WhatsApp,Less than six months,Data science,7-14 hours,Portfolio,Beginner,Yes,67.0
+25-34 years,Female,WhatsApp,Less than six months,Data science,more than 14 hours,Portfolio,Elementary,Yes,79.67
+18-24 years,Female,WhatsApp,Less than six months,Data analysis,7-14 hours,Portfolio,Elementary,Yes,70.0
+18-24 years,Male,WhatsApp,1-3 years,Data analysis,7-14 hours,Upskill,Elementary,Yes,69.0
+18-24 years,Male,LinkedIn,6 months - 1 year,Data analysis,more than 14 hours,Portfolio,Intermediate,Yes,69.33
+25-34 years,Male,Twitter,1-3 years,Data science,7-14 hours,Upskill,Elementary,Yes,74.33
+25-34 years,Female,WhatsApp,Less than six months,Data analysis,less than 6 hours,Upskill,Elementary,Yes,78.0
+18-24 years,Female,WhatsApp,6 months - 1 year,Data science,7-14 hours,Learn afresh,Intermediate,Yes,64.0
+25-34 years,Male,WhatsApp,6 months - 1 year,Data science,more than 14 hours,Upskill,Elementary,Yes,70.0
+35-44 years,Female,Twitter,6 months - 1 year,Data analysis,more than 14 hours,Portfolio,Elementary,Yes,59.0
+25-34 years,Female,WhatsApp,Less than six months,Data analysis,7-14 hours,Upskill,Elementary,Yes,64.67
+25-34 years,Male,Twitter,6 months - 1 year,Data analysis,7-14 hours,Upskill,Intermediate,Yes,77.67
+18-24 years,Male,WhatsApp,Less than six months,Data science,less than 6 hours,Upskill,Beginner,Yes,70.67
