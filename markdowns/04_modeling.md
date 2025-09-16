@@ -138,9 +138,9 @@ Class 0 (majority class) has 17 samples, while Class 1 (minority class) has only
 
 The model always predicts class 0 (recall for class 1 is 0.00), which artificially inflates accuracy.
 
-Precision = 0.74, Recall = 1.00, F1 = 0.85 → The model is excellent at identifying class 0.
+Precision = 0.74, Recall = 1.00, F1 = 0.85. The model is excellent at identifying class 0.
 
-Precision = 0.00, Recall = 0.00, F1 = 0.00 → The model completely fails to detect class 1.
+Precision = 0.00, Recall = 0.00, F1 = 0.00. The model completely fails to detect class 1.
 
 The weighted average is dominated by class 0, again hiding the model’s inability to recognize class 1.
 
@@ -218,7 +218,7 @@ print("\nClassification Report:\n", classification_report(y_test, y_pred))
 ### Adjusted class_weight = "balanced" model observations
 Our results after setting class_weight='balanced' show a clear shift in how the model treats the minority class (graduates).
 
-The model now predicts some graduates (class 1) as th recall improved from 0.00 → 0.17, which is progress for the minority class.
+The model now predicts some graduates (class 1) as th recall improved from 0.00 - 0.17, which is progress for the minority class.
 
 Accuracy dropped, this is expected as the model is no longer “playing it safe” by always predicting the majority class - class 0.
 
@@ -353,7 +353,7 @@ print("Mean Accuracy:", np.mean(acc_scores))
     Mean Accuracy: 0.47826086956521746
     
 
-We have moderate variability between folds – the standard deviation of ≈0.053 suggests performance is somewhat stable, but not highly reliable.
+We have moderate variability between folds - the standard deviation of ≈0.053 suggests performance is somewhat stable, but not highly reliable.
 
 Low absolute F1-macro and accuracy – the classifier is struggling to separate graduates (class 1) from non-graduates (class 0).
 
@@ -593,11 +593,11 @@ Better accuracy and class 0 stability compared to Logistic Regression.
 CatBoost’s gradient boosting approach can model non-linear relationships better than logistic regression.
 
 ### Challanges
-Low recall for class 1 (17%) → Most graduates are being misclassified.
+Low recall for class 1 (17%) - Most graduates are being misclassified.
 
-Small dataset (115 rows) → Limits model’s ability to learn complex patterns.
+Small dataset (115 rows) - Limits model’s ability to learn complex patterns.
 
-Imbalanced classes → Even with boosting, the model favors the majority class.
+Imbalanced classes - Even with boosting, the model favors the majority class.
 
 ## i. Conclusion
 
@@ -607,7 +607,7 @@ Logistic Regression with class_weight='balanced' - Significant improvement in re
 
 SMOTE + Logistic Regression (Stratified KFold) - Similar to weighted logistic regression. Had good recall for graduates but lower precision. SMOTE helped further balance performance across folds.
 
-CatBoost (tuned) - Best overall accuracy, but very poor detection of graduates—it tends to predict class 0.
+CatBoost (tuned) - Best overall accuracy, but very poor detection of graduates - it tends to predict class 0.
 
 Logistic Regression with SMOTE clearly outperformed the other models for recall and F1 of class 1. 
 

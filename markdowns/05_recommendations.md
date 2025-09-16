@@ -8,17 +8,17 @@ Evaluation: Stratified K-fold CV, Accuracy, Precision, Recall, and F1-macro, wit
 
 ## Key Findings
 
-Logistic Regression (no SMOTE): Low recall/F1 for graduates → struggled with class imbalance.
+Logistic Regression (no SMOTE): Low recall/F1 for graduates - struggled with class imbalance.
 
-SMOTE + Logistic Regression: Improved F1-macro (~0.49) and recall for class 1 → better at identifying graduates, even with slightly lower accuracy than CatBoost.
+SMOTE with Logistic Regression: Improved F1-macro (~0.49) and recall for class 1 - better at identifying graduates, even with slightly lower accuracy than CatBoost.
 
-CatBoost: Best overall accuracy (~0.61) but very poor recall for graduates (0.17) → unsuitable when missing graduates is costly.
+CatBoost: Best overall accuracy (~0.61) but very poor recall for graduates (0.17) - unsuitable when missing graduates is costly.
 
 ## Model Recommendation
 
 Use Logistic Regression with SMOTE as the primary model. It balances precision and recall and is significantly better at detecting students likely to graduate, which aligns with the project’s goal. 
 
-CatBoost can be explored further, but only if improving class 1 recall (e.g., through class weights or threshold tuning).
+CatBoost can be explored further, but only if improving class 1 recall.
 
 ## Improvements
 
@@ -34,4 +34,4 @@ CatBoost can be explored further, but only if improving class 1 recall (e.g., th
 
 For stakeholders:
 
-Deploy the SMOTE + Logistic Regression model in a pilot setting to flag students at risk of not graduating. Pair predictions with targeted academic support, then monitor precision/recall metrics over time.
+Deploy the SMOTE with Logistic Regression model in a pilot setting to flag students at risk of not graduating. Pair predictions with targeted academic support, then monitor precision/recall metrics over time.
