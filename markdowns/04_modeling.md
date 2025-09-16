@@ -34,46 +34,51 @@
     
     Assumes feature independence, which is often not true, but it’s robust enough for small data.
 
-
-```python
-import os
-
-os.chdir("..")
-print("Current working dir:", os.getcwd())
-#print("Files in raw folder:", os.listdir("data/raw"))
-```
-
-    Current working dir: C:\Users\Window\Desktop\Everything_Data_Mentorship\mentorship_ds_project
-    
-
 ## c. Imports
 
 
 ```python
-import joblib
 import pandas as pd
-from sklearn.model_selection import StratifiedKFold, cross_val_predict
+import numpy as np
+from sklearn.model_selection import StratifiedKFold, cross_val_predict, cross_val_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import CategoricalNB
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
-#import catboost as cb 
+from catboost import CatBoostClassifier 
+from sklearn.preprocessing import StandardScaler
 ```
 
 ## d. Loading Data 
 
 
 ```python
+from pathlib import Path
+import pandas as pd
+import joblib
 
-preprocessor = joblib.load('artifacts/preprocessor.joblib')
+# ===== Defining the data directories ==== #
+PROJECT_ROOT = Path(r"C:\Users\Window\Desktop\Everything_Data_Mentorship\mentorship_ds_project")
+DATA_DIR = PROJECT_ROOT / "data"
+COMMON_DATA_DIR = DATA_DIR / "raw"
+INGESTED_DIR = DATA_DIR / "processed"
 
-# Load original splits
-X_train = pd.read_csv('data/processed/X_train.csv')
-X_test = pd.read_csv('data/processed/X_test.csv')
-y_train = pd.read_csv('data/processed/y_train.csv').squeeze()  # convert DataFrame to Series
-y_test = pd.read_csv('data/processed/y_test.csv').squeeze()
+# ===== Define artifact and data file paths ==== #
+preprocessor_file = PROJECT_ROOT / "artifacts" / "preprocessor.joblib"
+X_train_file = INGESTED_DIR / "X_train.csv"
+X_test_file = INGESTED_DIR / "X_test.csv"
+y_train_file = INGESTED_DIR / "y_train.csv"
+y_test_file = INGESTED_DIR / "y_test.csv"
 
-# Transform again if needed
+# ===== Load the preprocessor and data ==== #
+preprocessor = joblib.load(preprocessor_file)
+
+X_train = pd.read_csv(X_train_file)
+X_test = pd.read_csv(X_test_file)
+y_train = pd.read_csv(y_train_file).squeeze()  # convert DataFrame to Series
+y_test = pd.read_csv(y_test_file).squeeze()
+
+# ===== Transform ==== #
 X_train_final = preprocessor.transform(X_train)
 X_test_final = preprocessor.transform(X_test)
 ```
@@ -83,9 +88,6 @@ X_test_final = preprocessor.transform(X_test)
 
 ```python
 #Logistic Regression
-
-from sklearn.preprocessing import StandardScaler
-
 scaler = StandardScaler()
 X_train_final[:, -1:] = scaler.fit_transform(X_train_final[:, -1:])
 X_test_final[:, -1:]  = scaler.transform(X_test_final[:, -1:])
@@ -316,8 +318,6 @@ We use StratifiedKFold to preserves class balance instead of one fixed split.
 
 
 ```python
-import numpy as np
-
 # Use all your preprocessed features and labels
 X_all = preprocessor.transform(pd.concat([X_train, X_test], axis=0).reset_index(drop=True)) # Preprocessed features for the whole dataset
 y_all = pd.concat([y_train, y_test], axis=0).reset_index(drop=True) # Target labels for the whole dataset
@@ -359,11 +359,258 @@ Low absolute F1-macro and accuracy – the classifier is struggling to separate 
 
 Class imbalance likely affects performance – even with class_weight='balanced', the model is biased toward the majority class.
 
-## g. Next Steps 
-
-Trying a diffrent model; ie. Decision Tree–based models - CatBoost and Naïve Bayes - CategoricalNB model and compare the peformance to the logistic regression model.
+## g. SMOTE with Logistic Regression and Stratified KFold Validation
 
 
 ```python
+X_all = pd.concat([X_train, X_test], axis=0).reset_index(drop=True) # Preprocessed features for the whole dataset
+y_all = pd.concat([y_train, y_test], axis=0).reset_index(drop=True) # Target labels for the whole dataset
 
+#Imports 
+from imblearn.over_sampling import SMOTE
+from imblearn.pipeline import Pipeline
+
+#Instanciate SMOTE 
+smote = SMOTE(random_state=42, k_neighbors=2)  # k_neighbors can be tuned
+
+#Instatiate Logistic Regression
+log_reg = LogisticRegression(
+    max_iter=1000, 
+    class_weight=None,
+    C=1.0, #Best C
+    random_state=42)
+
+#Create a pipeline 
+pipeline = Pipeline([
+    ('preprocessor', preprocessor),
+    ('smote', smote),
+    ('log_reg', log_reg)
+])
+
+# Stratified K-Fold setup
+skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+
+f1_scores = []
+accuracies = []
+precisions = []
+recalls = []
+
+# Perform cross-validation
+for fold, (train_idx, test_idx) in enumerate(skf.split(X_all, y_all), start=1):
+    X_train, X_test = X_all.iloc[train_idx], X_all.iloc[test_idx]
+    y_train, y_test = y_all.iloc[train_idx], y_all.iloc[test_idx]
+
+    pipeline.fit(X_train, y_train)      
+    y_pred = pipeline.predict(X_test)
+
+    # Classification report for this fold
+    print(f"\n=== Fold {fold} Classification Report ===")
+    print(classification_report(y_test, y_pred, target_names=['Did Not Graduate (0)', 'Graduated (1)']))
+
+    # Collect metrics
+    f1 = f1_score(y_test, y_pred, average='macro')
+    acc = accuracy_score(y_test, y_pred)
+    prec = precision_score(y_test, y_pred, average='macro', zero_division=0)
+    rec = recall_score(y_test, y_pred, average='macro', zero_division=0)
+
+    f1_scores.append(f1)
+    accuracies.append(acc)
+    precisions.append(prec)
+    recalls.append(rec)
+
+#Results
+print(f"F1-macro scores: {f1_scores}")
+print(f"Mean Precision: {np.mean(precisions):.3f} ± {np.std(precisions):.3f}")
+print(f"Mean Recall:    {np.mean(recalls):.3f} ± {np.std(recalls):.3f}")
+print(f"Mean F1-macro: {np.mean(f1_scores):.3f} ± {np.std(f1_scores):.3f}")
+print(f"Mean Accuracy: {np.mean(accuracies):.3f}")
 ```
+
+    C:\Users\Window\anaconda3\envs\everything_data\Lib\site-packages\sklearn\preprocessing\_encoders.py:246: UserWarning: Found unknown categories in columns [1] during transform. These unknown categories will be encoded as all zeros
+      warnings.warn(
+    
+
+    
+    === Fold 1 Classification Report ===
+                          precision    recall  f1-score   support
+    
+    Did Not Graduate (0)       0.88      0.41      0.56        17
+           Graduated (1)       0.33      0.83      0.48         6
+    
+                accuracy                           0.52        23
+               macro avg       0.60      0.62      0.52        23
+            weighted avg       0.73      0.52      0.54        23
+    
+    
+    === Fold 2 Classification Report ===
+                          precision    recall  f1-score   support
+    
+    Did Not Graduate (0)       0.79      0.65      0.71        17
+           Graduated (1)       0.33      0.50      0.40         6
+    
+                accuracy                           0.61        23
+               macro avg       0.56      0.57      0.55        23
+            weighted avg       0.67      0.61      0.63        23
+    
+    
+    === Fold 3 Classification Report ===
+                          precision    recall  f1-score   support
+    
+    Did Not Graduate (0)       0.67      0.35      0.46        17
+           Graduated (1)       0.21      0.50      0.30         6
+    
+                accuracy                           0.39        23
+               macro avg       0.44      0.43      0.38        23
+            weighted avg       0.55      0.39      0.42        23
+    
+    
+    === Fold 4 Classification Report ===
+                          precision    recall  f1-score   support
+    
+    Did Not Graduate (0)       0.75      0.71      0.73        17
+           Graduated (1)       0.29      0.33      0.31         6
+    
+                accuracy                           0.61        23
+               macro avg       0.52      0.52      0.52        23
+            weighted avg       0.63      0.61      0.62        23
+    
+    
+    === Fold 5 Classification Report ===
+                          precision    recall  f1-score   support
+    
+    Did Not Graduate (0)       0.69      0.69      0.69        16
+           Graduated (1)       0.29      0.29      0.29         7
+    
+                accuracy                           0.57        23
+               macro avg       0.49      0.49      0.49        23
+            weighted avg       0.57      0.57      0.57        23
+    
+    F1-macro scores: [0.5180952380952382, 0.5548387096774194, 0.38076923076923075, 0.5174825174825175, 0.48660714285714285]
+    Mean Precision: 0.522 ± 0.057
+    Mean Recall:    0.526 ± 0.068
+    Mean F1-macro: 0.492 ± 0.059
+    Mean Accuracy: 0.539
+    
+
+    C:\Users\Window\anaconda3\envs\everything_data\Lib\site-packages\sklearn\preprocessing\_encoders.py:246: UserWarning: Found unknown categories in columns [1, 3] during transform. These unknown categories will be encoded as all zeros
+      warnings.warn(
+    
+
+### SMOTE achieved:
+
+Balanced training set per fold, helping the model learn class 1 (“graduated”) patterns better.
+
+More stable F1 scores across folds compared to earlier runs.
+
+Reduced extreme bias toward class 0, as shown by the improved F1-macro.
+
+Better average precision for class 0.
+
+### Limitations
+
+Accuracy is still moderate (0.557), meaning many predictions remain misclassified.
+
+Precision/recall values are close to random guessing (0.5), suggesting the features may not strongly separate the classes.
+
+## h. Random Forest; CatBoost
+
+
+```python
+from src.features import convert_categorical
+X_train_cat = convert_categorical(X_train)
+X_test_cat = convert_categorical(X_test)
+cat_features = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+# Define the base model
+cat_model = CatBoostClassifier(verbose=0,random_seed=42, cat_features=cat_features)
+
+#Define Stratified K-Fold
+skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+
+#Define the param grid
+param_grid = {
+    'iterations': [200, 500],
+    'depth': [4, 6, 8],
+    'learning_rate': [0.05, 0.1, 0.2],
+    'l2_leaf_reg': [3, 5, 7]
+}
+
+#GridSearchCV
+grid_search = GridSearchCV(
+    estimator=cat_model,
+    param_grid=param_grid,
+    cv=skf,
+    scoring='f1_macro',
+    n_jobs=-1
+)
+
+#Fit GridSearchCV on the training data
+grid_search.fit(X_train_final, y_train)
+
+#Get the best parameters and score
+print("Best Parameters:", grid_search.best_params_)
+print("Best CV Accuracy:", grid_search.best_score_)
+
+#Train a final model using the best parameters on the full training set
+best_model = grid_search.best_estimator_
+best_model.fit(X_train_final, y_train)
+
+#Make predictions
+y_pred = best_model.predict(X_test_final)
+
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
+```
+
+    Best Parameters: {'depth': 4, 'iterations': 500, 'l2_leaf_reg': 5, 'learning_rate': 0.2}
+    Best CV Accuracy: 0.5335390025045198
+    Accuracy: 0.6086956521739131
+    
+    Classification Report:
+                  precision    recall  f1-score   support
+    
+               0       0.72      0.76      0.74        17
+               1       0.20      0.17      0.18         6
+    
+        accuracy                           0.61        23
+       macro avg       0.46      0.47      0.46        23
+    weighted avg       0.59      0.61      0.60        23
+    
+    
+
+Accuracy of 0.61 - Better than Logistic Regression (0.557), but still misses many class 1s.
+
+Class 0 F1-score of	0.74 - The model is very confident predicting non-graduates.
+
+Class 1 F1-score of 0.18 - The model struggles to identify graduates (many false negatives).
+
+Macro Avg F1-score of 0.46 - Average performance across classes is moderate.
+
+Weighted Avg F1-score of 0.60 - Skewed toward class 0 due to class imbalance.
+
+Better accuracy and class 0 stability compared to Logistic Regression.
+
+CatBoost’s gradient boosting approach can model non-linear relationships better than logistic regression.
+
+### Challanges
+Low recall for class 1 (17%) → Most graduates are being misclassified.
+
+Small dataset (115 rows) → Limits model’s ability to learn complex patterns.
+
+Imbalanced classes → Even with boosting, the model favors the majority class.
+
+## i. Conclusion
+
+Baseline Logistic Regression (no scaling, no balancing) - Missed most graduates.
+
+Logistic Regression with class_weight='balanced' - Significant improvement in recall for class 1 while keeping a moderate F1.
+
+SMOTE + Logistic Regression (Stratified KFold) - Similar to weighted logistic regression. Had good recall for graduates but lower precision. SMOTE helped further balance performance across folds.
+
+CatBoost (tuned) - Best overall accuracy, but very poor detection of graduates—it tends to predict class 0.
+
+Logistic Regression with SMOTE clearly outperformed the other models for recall and F1 of class 1. 
+
+Logistic Regression with SMOTE maintained a reasonable trade-off: Mean Accuracy: 0.54 and Mean F1-macro: 0.49 and better recall for class 1, which is our priority.
+
+Therefore this model found more actual graduates even if their overall accuracy was slightly lower.
