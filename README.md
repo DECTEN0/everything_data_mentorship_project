@@ -1,45 +1,77 @@
-# Everything Data – Mentorship Cohort Analysis (Data Science Track)
+# Everything Data Mentorship Project – Graduation Prediction  
 
-This repository analyzes a mentorship cohort dataset to understand demographics, motivations, performance, and drivers of graduation.
+## Project Overview  
+This project analyzes data from a previous **Everything Data Mentorship** cohort to understand participant demographics, motivations, and performance. The main goal is to **predict graduation status** using key features like experience, weekly commitment hours, and total score, then provide actionable recommendations to improve graduation rates.  
 
-## Dataset Columns
-- Timestamp
-- ID No.
-- Age range
-- Gender
-- Country
-- Where did you hear about Everything Data?
-- Years of learning experience in the data field
-- Track applied for
-- Hours per week available
-- Main aim for joining
-- Motivation for joining
-- Self-assessed skill level in chosen track
-- Aptitude test completion status
-- Total score
-- Graduation status
+---
 
-## Project Goals
-1) Understand participant demographics, motivations, and performance  
-2) Highlight factors that influence graduation rates  
-3) Present actionable recommendations for improving future cohorts
+## Dataset Overview  
+The dataset contains mentorship participant information, including:  
 
-## Quickstart
-```bash
-# 1) Create a virtual environment (example with venv)
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
+| Column | Description |
+|--------|-------------|
+| Timestamp | Submission time of participant response |
+| ID No. | Unique participant identifier |
+| Age range | Age group of the participant |
+| Gender | Gender of the participant |
+| Country | Participant’s country |
+| Referral source | How the participant heard about Everything Data |
+| Years of learning experience | Experience in data-related fields |
+| Track applied for | Chosen data track |
+| Weekly commitment hours | Hours per week available for the program |
+| Main aim for joining | Participant’s primary goal |
+| Motivation for joining | Reason for joining |
+| Skill level | Self-assessed skill level |
+| Aptitude test completion status | Whether the aptitude test was completed |
+| Total score | Aptitude test score (58.33–86) |
+| Graduation status | **Target variable** (1 = Graduated, 0 = Did not graduate) |
 
-# 2) Install dependencies
-pip install -r requirements.txt
+---
 
-# 3) Put the provided CSV into data/raw/ as cohort.csv
+## Objectives  
+- Perform **data cleaning and preprocessing** using Python (Pandas, NumPy).  
+- Conduct **exploratory data analysis** (Matplotlib, Seaborn) to visualize distributions and correlations.  
+- Build **classification models** (e.g., Logistic Regression, CatBoost) to predict graduation status.  
+- Evaluate models using **accuracy, precision, recall, and F1-score**.  
+- Recommend data-driven strategies to **improve graduation rates**.  
 
-# 4) Run the pipeline
-python scripts/run_all.py --config configs/params.yaml
+---
 
-# 5) Explore outputs in reports/ and notebooks/
-```
+## Tools & Libraries  
+- **Python 3.10+**  
+- **Pandas**, **NumPy** – Data cleaning and manipulation  
+- **Matplotlib**, **Seaborn** – Exploratory data analysis and visualization  
+- **Scikit-learn** – Preprocessing, Logistic Regression, model evaluation  
+- **CatBoost** – Advanced gradient boosting classifier  
+- **Imbalanced-learn (SMOTE)** – Address class imbalance  
+- **Jupyter Notebook** – Interactive development environment  
 
-## Repo Layout
-See the folder tree in this README or the repository itself.
+---
+
+## Workflow  
+1. **Data Cleaning & Preprocessing**  
+   - Handled missing values using mode and median where appropriate.  
+   - Encoded categorical variables with **OrdinalEncoder** and **OneHotEncoder**.  
+   - Scaled continuous features (e.g., `total_score`) using **StandardScaler**.  
+
+2. **Exploratory Data Analysis (EDA)**  
+   - Visualized participant demographics and test score distributions.  
+   - Investigated relationships between features (e.g., skill level vs. graduation).  
+
+3. **Modeling & Evaluation**  
+   - **Logistic Regression** (with and without class balancing + SMOTE).  
+   - **CatBoost Classifier** (hyperparameter tuning via grid search).  
+   - Used **Stratified K-Fold Cross-Validation** for robust evaluation.  
+
+4. **Key Results**  
+   - **CatBoost** achieved the **best recall for class 1 (Graduated)** and overall accuracy (~61%).  
+   - Logistic Regression with SMOTE improved balance between classes but had lower recall for graduates.  
+
+5. **Recommendations**  
+   - Increase engagement for participants with low weekly commitment hours or test scores.  
+   - Offer tailored support or prerequisite learning for those with limited prior experience.  
+   - Strengthen communication channels where participants first hear about the program.  
+   - Use predictive models early in the program to flag at-risk participants for additional mentorship.  
+
+---
+
