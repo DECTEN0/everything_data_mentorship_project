@@ -49,25 +49,29 @@ The dataset contains mentorship participant information, including:
 ---
 
 ## Workflow  
-1. **Data Cleaning & Preprocessing**  
-   - Handled missing values using mode and median where appropriate.  
-   - Encoded categorical variables with **OrdinalEncoder** and **OneHotEncoder**.  
-   - Scaled continuous features (e.g., `total_score`) using **StandardScaler**.  
+1. **Data Overview**  
+   - Basic Data Exploration.
+   - Renamed column names to short descriptive names.  
 
 2. **Exploratory Data Analysis (EDA)**  
    - Visualized participant demographics and test score distributions.  
    - Investigated relationships between features (e.g., skill level vs. graduation).  
 
-3. **Modeling & Evaluation**  
+3. **Feature Engineering**  
+   - Handled missing values using mode and median where appropriate.  
+   - Encoded categorical variables with **OrdinalEncoder** and **OneHotEncoder**.  
+   - Scaled continuous features (e.g., `total_score`) using **StandardScaler**.
+     
+4. **Modeling & Evaluation**  
    - **Logistic Regression** (with and without class balancing + SMOTE).  
    - **CatBoost Classifier** (hyperparameter tuning via grid search).  
    - Used **Stratified K-Fold Cross-Validation** for robust evaluation.  
 
-4. **Key Results**  
+5. **Key Results**  
    - **CatBoost** achieved the **best recall for class 1 (Graduated)** and overall accuracy (~61%).  
    - Logistic Regression with SMOTE improved balance between classes but had lower recall for graduates.  
 
-5. **Recommendations**  
+6. **Recommendations**  
    - Increase engagement for participants with low weekly commitment hours or test scores.  
    - Offer tailored support or prerequisite learning for those with limited prior experience.  
    - Strengthen communication channels where participants first hear about the program.  
