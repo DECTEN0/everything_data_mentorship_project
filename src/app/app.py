@@ -14,14 +14,11 @@ import gradio as gr
 #Load the Dataset
 
 # ===== Defining the data directories ==== #
-
-PROJECT_ROOT = Path(r"C:\Users\Window\Desktop\Everything_Data_Mentorship\mentorship_ds_project")
-DATA_DIR = PROJECT_ROOT / "data"
-COMMON_DATA_DIR = DATA_DIR / "raw"
-INGESTED_DIR = DATA_DIR / "processed"
+PROJECT_ROOT = Path(__file__).parent  # points to /home/user/app
+DATA_DIR = PROJECT_ROOT / "data" / "processed"
+data_path = DATA_DIR / "modeling_data.csv"
 
 # ===== Define artifact and data file paths ==== #
-data_path = INGESTED_DIR / "modeling_data.csv"
 df = pd.read_csv(data_path)
 
 #Convert columns to categorical

@@ -1,0 +1,7 @@
+gradio
+pandas
+scikit-learn
+imblearn
+joblib
+numpy
+pathlib
