@@ -44,7 +44,8 @@ The dataset contains mentorship participant information, including:
 - **Scikit-learn** – Preprocessing, Logistic Regression, model evaluation  
 - **CatBoost** – Advanced gradient boosting classifier  
 - **Imbalanced-learn (SMOTE)** – Address class imbalance  
-- **Jupyter Notebook** – Interactive development environment  
+- **Jupyter Notebook** – Interactive development environment
+- **Gradio** – Web-based model interface for deployment  
 
 ---
 
@@ -76,6 +77,13 @@ The dataset contains mentorship participant information, including:
    - Offer tailored support or prerequisite learning for those with limited prior experience.  
    - Strengthen communication channels where participants first hear about the program.  
    - Use predictive models early in the program to flag at-risk participants for additional mentorship.  
+
+---
+
+## Deployment  
+The **Graduation Status Predictor** has been deployed on **Hugging Face Spaces** using **Gradio** for the interactive interface.  
+You can try out the live demo here:  
+👉 [Graduation Status Predictor on Hugging Face Spaces](https://huggingface.co/spaces/Decten/graduation-status-predictor)  
 
 ---
 
